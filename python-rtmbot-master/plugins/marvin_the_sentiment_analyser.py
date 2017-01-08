@@ -29,8 +29,7 @@ class Repeat(Plugin):
         "total": 0,
     }
 
-
-    def display_current_mood(channel):
+    def display_current_mood(self, channel):
         reply = ""
 
         # something has gone wrong if we don't have a channel do nothing
@@ -44,11 +43,10 @@ class Repeat(Plugin):
                 continue
             reply += "{}: {}%\n ".format(k.capitalize(), v)
 
-        outputs.append([channel, str(reply)])
+        self.outputs.append([channel, str(reply)])
         return
 
-    @staticmethod
-    def process_message(data):
+    def process_message(self, data):
 
         text = data.get("text", None)
 
@@ -59,7 +57,7 @@ class Repeat(Plugin):
         text = text.encode('utf-8')
 
         if "current mood?" in text:
-            return display_current_mood(data.get("channel", None))
+            return self.display_current_mood(data.get("channel", None))
 
         # don't log the current mood reply!
         if text.startswith('Positive:'):
@@ -97,8 +95,8 @@ class Repeat(Plugin):
                 sentiment_averages[k] = round(
                     float(v) / float(sentiment_averages["total"]) * 100, 2)
 
-            if compound_result < -0.75:
-                outputs.append([data["channel"], "Easy there, negative Nancy!"])
+            if compound_result < -0.5:
+                self.outputs.append([data["channel"], "Easy there, negative Nancy!"])
 
             # print to the console what just happened
             print 'Comment "{}" was {}, compound result {}'.format(text, verdict, compound_result)
